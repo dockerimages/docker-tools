@@ -1,0 +1,2 @@
+#!/bin/bash
+# Lists all Volumes and the Containers where they are from also shows if the container exists :D
