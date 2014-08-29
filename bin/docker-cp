@@ -6,7 +6,10 @@ if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
   echo "Enters the Docker CONTAINER and copys file from host"
 else
   CONTAINERID=$(docker inspect --format "{{.Id}}" "$1")
+  ## Aufs Driver!
   CONTAINERFS=/var/lib/docker/aufs/mnt/$CONTAINERID/
+  ## Device Mapper!
+  CONTAINERFS-DEVICEMAPPER=/var/lib/docker/devicemapper/mnt/664f006e611612bbcd591c440a105aba3606f1425ffd324e4bc38fce98c533ec/rootfs/
   if [ -z $CONTAINERID ]; then
     echo "Container not found"
     exit 1
