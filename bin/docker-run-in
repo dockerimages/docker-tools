@@ -1,0 +1,24 @@
+#!/bin/sh
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo "Usage: docker-run CONTAINER SCRIPT [ARG]..."
+  echo ""
+  echo "Enters the Docker CONTAINER and executes the specified shell script"
+else
+  CONTAINERID=$(docker inspect --format "{{.Id}}" "$1")
+  
+  if [ -z $CONTAINERID ]; then
+    echo "Container not found"
+    exit 1
+  fi
+ 
+ CONTAINERFS=(             # Compound assignment
+    [aufs]='/var/lib/docker/aufs/mnt/$CONTAINERID/'
+    [devicemapper]='/var/lib/docker/devicemapper/mnt/$CONTAINERID/rootfs/'
+  )
+  
+  cp $2 ${CONTAINERFS[$(docker info | grep Storage | awk '{print $3}')]}
+  chmod +x ${CONTAINERFS[$(docker info | grep Storage | awk '{print $3}')]}/$2
+  docker-enter $1 $2
+  rm ${CONTAINERFS[$(docker info | grep Storage | awk '{print $3}')]}/$2
+fi
