@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
+  echo "Usage: docker-run CONTAINERID /src/name /target/name"
+  echo ""
+  echo "Enters the Docker CONTAINER and copys file from host"
+else
+  CONTAINERID=$(docker inspect --format "{{.Id}}" "$1")
+  CONTAINERFS=/var/lib/docker/aufs/mnt/$CONTAINERID/
+  if [ -z $CONTAINERID ]; then
+    echo "Container not found"
+    exit 1
+  fi
+
+  cp $3 $CONTAINERFS
