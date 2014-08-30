@@ -7,6 +7,9 @@ Collection of usefull docker-tools install able via docker run
 
     docker run -v /home/frank/oha:/target dockerimages/docker-tools
 
+    # Results in: ls /home/frank/oha
+    # docker-cp  docker-enter  docker-fs  docker-ip  docker-rm  docker-rmi  docker-run-in  docker-volumen
+
 # docker-cp
 Copy files and even directorys into a running container via
 
