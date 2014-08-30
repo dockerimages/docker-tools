@@ -10,7 +10,7 @@
 # #############
 
 if [ -z "$1" ] || [ -z "$2" ]; then
-  echo "Usage: docker-run CONTAINER SCRIPT [ARG]..."
+  echo "Usage: docker-run-in CONTAINER SCRIPT [ARG]..."
   echo ""
   echo "Enters the Docker CONTAINER and executes the specified shell script"
 else
