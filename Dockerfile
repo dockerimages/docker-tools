@@ -1,6 +1,6 @@
-FROM ubuntu:14.04
+FROM dockerimages/ubuntu-core:14.04
 MAINTAINER Frank Lemanschik
-ADD ./installer /usr/bin/
-ADD ./bin /docker-tools
-RUN chmod +x /docker-tools/* /usr/bin/installer
-CMD ["installer"]
+RUN apt-get update -y && apt-get -y install git
+RUN git clone https://github.com/dockerimages/docker-tools
+RUN chmod +x /docker-tools/bin/* /docker-tools/installer
+CMD ["/docker-tools/installer"]
