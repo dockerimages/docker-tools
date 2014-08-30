@@ -1,6 +1,6 @@
 #!/bin/sh
 if mountpoint -q /target; then
-	echo "Updating docker-tools"
+	echo "Updating docker-tools2"
 	cd /docker-tools
 	git fetch origin
  	git reset --hard origin/master
