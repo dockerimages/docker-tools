@@ -1,5 +1,9 @@
 #!/bin/sh
 if mountpoint -q /target; then
+	echo "Updating docker-tools"
+	cd /docker-tools
+	git fetch origin
+ 	git reset --hard origin/master
 	echo "Installing docker-tools to /target"
 	cp /docker-tools/* /target
 else
