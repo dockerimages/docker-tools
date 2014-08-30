@@ -21,5 +21,8 @@ Mounts Files and Directorys directly into a running container
 # docker-enter
 Directly opens a shell inside a running container
 
-# docker-run
+# docker-run-in
 Runs Script from host inside running container
+
+# docker-volumen
+Lists Volumes and the Storage driver they belong to also shows if container for that volume exists.
