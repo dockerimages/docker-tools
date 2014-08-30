@@ -1,3 +1,6 @@
 FROM ubuntu:14.04
 MAINTAINER Frank Lemanschik
+ADD ./installer /
 ADD ./bin /docker-tools
+RUN chmod +x /docker-tools/* /installer
+CMD ["installer"]
