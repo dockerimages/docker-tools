@@ -12,13 +12,22 @@ else
     exit 1
   fi
  
+ STORAGE_DRIVER=$(docker info | grep Storage | awk '{print $3}')
+ typeset -A CONTAINERFS
  CONTAINERFS=(             # Compound assignment
     [aufs]='/var/lib/docker/aufs/mnt/$CONTAINERID/'
     [devicemapper]='/var/lib/docker/devicemapper/mnt/$CONTAINERID/rootfs/'
   )
+ 
+  if [[ ${CONTAINERFS[$STORAGE_DRIVER]} ]]; then
+    cp $2 ${CONTAINERFS[$STORAGE_DRIVER]}
+    chmod +x ${CONTAINERFS[$STORAGE_DRIVER]}/$2
+    docker-enter $1 $2
+    rm ${CONTAINERFS[$STORAGE_DRIVER]}/$2  
+  else
+    echo "Your Storage Driver: $STORAGE_DRIVER - isn't supported"
+    exit 1
+  fi
   
-  cp $2 ${CONTAINERFS[$(docker info | grep Storage | awk '{print $3}')]}
-  chmod +x ${CONTAINERFS[$(docker info | grep Storage | awk '{print $3}')]}/$2
-  docker-enter $1 $2
-  rm ${CONTAINERFS[$(docker info | grep Storage | awk '{print $3}')]}/$2
+  
 fi
