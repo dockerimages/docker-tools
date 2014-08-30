@@ -1,0 +1,51 @@
+#!/bin/sh
+###############
+# Author: Frank Lemanschik <frank@dspeed.eu>
+# Licence: Apache
+# Src-Package: http://github.com/dockerimages/docker-tools
+# Version: 0.3
+#
+# Usage: docker-fs localcommand CONTAINERID /path/to/file
+# Usage-2: if used without localcommand the result will be only the file path
+# Notes Container can be a Running one or a stoped one command suggestions
+# rsync, logrotate, nano, vi, anything you whant to do to a file.
+# example-1_ docker-exec nano CONTAINERID /path/to/file 
+# Result: will run yourlocalbin located on Host inside the fs of a docker Container.
+# #############
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo "Usage: docker-fs command CONTAINERID /path/file"
+  echo ""
+  echo "Enters the Docker CONTAINER and executes the specified shell script"
+else
+  CONTAINERID=$(docker inspect --format "{{.Id}}" "$1") 
+  CONTAINERID2=$(docker inspect --format "{{.Id}}" "$2") 
+  
+  if [ -z $CONTAINERID ]; then
+    if [ -z $CONTAINERID2 ]; then
+      echo "Container not found"
+      exit 1
+    fi
+    CONTAINERID=$CONTAINERID2
+  fi
+ 
+ STORAGE_DRIVER=$(docker info | grep Storage | awk '{print $3}')
+ typeset -A CONTAINERFS
+ CONTAINERFS=(             # Compound assignment
+    [aufs]='/var/lib/docker/aufs/mnt/$CONTAINERID/'
+    [devicemapper]='/var/lib/docker/devicemapper/mnt/$CONTAINERID/rootfs/'
+  )
+ 
+ if [[ $(docker inspect --format "{{.Id}}" "$1") -eq $CONTAINERID ]]; then
+ 
+ fi
+ 
+  if [[ ${CONTAINERFS[$STORAGE_DRIVER]} ]]; then
+    $1 ${CONTAINERFS[$STORAGE_DRIVER]}/$3
+  else
+    echo "Your Storage Driver: $STORAGE_DRIVER - isn't supported"
+    exit 1
+  fi
+  
+  
+fi
