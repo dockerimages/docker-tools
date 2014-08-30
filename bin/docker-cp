@@ -1,9 +1,9 @@
 #!/bin/sh
 
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
-  echo "Usage: docker-run CONTAINERID /src/name /target/name"
+  echo "Usage: docker-cp CONTAINERID /src/name /target/name"
   echo ""
-  echo "Enters the Docker CONTAINER and copys file from host"
+  echo "Copys Files and Folders From Host to Docker CONTAINER"
 else
   CONTAINERID=$(docker inspect --format "{{.Id}}" "$1")
  
