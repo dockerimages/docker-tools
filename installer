@@ -6,10 +6,10 @@ if mountpoint -q /target; then
  	git reset --hard origin/master
  	chmod +x /docker-tools/bin/*
 	echo "Installing docker-tools to /target"
-	cp /docker-tools/* /target
+	cp /docker-tools/bin/* /target
 else
 	echo "/target is not a mountpoint."
 	echo "You can either:"
 	echo "- re-run this container with -v /usr/local/bin:/target"
-	echo "- extract the docker-tools folder (located at /)"
+	echo "- extract the /docker-tools/bin folder"
 fi
