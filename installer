@@ -4,6 +4,7 @@ if mountpoint -q /target; then
 	cd /docker-tools
 	git fetch origin
  	git reset --hard origin/master
+ 	chmod +x /docker-tools/bin/*
 	echo "Installing docker-tools to /target"
 	cp /docker-tools/* /target
 else
