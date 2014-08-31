@@ -2,7 +2,8 @@
 ######
 
 ## Runs a HTTP Server
-NAME=HTTP_$(tr [a-z] [A-Z] <<EOF
+NAME="HTTP_$(tr [a-z] [A-Z] <<EOF
 $1
 EOF
+)"
 docker run -d --env="HAPROXY_DOMAIN $1"  -v /var/www/${1}:/var/www/html --restart="always" --name="$NAME" dockerimages/apache2-php5
