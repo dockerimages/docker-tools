@@ -1,4 +1,4 @@
-docker-tools v0.2 Info
+docker-tools v0.8 Info
 ============
 Collection of usefull docker-tools install able via docker run
 
