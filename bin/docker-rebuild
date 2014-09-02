@@ -1,1 +1,4 @@
- 
+#!/bin/bash
+# Uses docker-inspect-env-value command to get value of DOCKER_BUILD env var and execute that
+# Usage: docker-rebuild imagename
+docker-inspect-env-value $1 DOCKER_BUILD | exec $(awk '{print}')
