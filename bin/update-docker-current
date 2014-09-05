@@ -1,10 +1,10 @@
 #!/bin/bash
 RESTART=$(docker ps | echo $(awk '{print $1}'))
 sudo service docker stop
-sleep 5
+sleep 60
 # need to loop cp till succesfully probally
 sudo cp /usr/bin/docker-1.*-dev /usr/bin/docker-current
 sudo service docker start
-sleep 2
+sleep 20
 # need to check till docker ps works :D
 sudo docker start $RESTART
