@@ -29,7 +29,7 @@
 ## wrap new commands only
 #if $1 = array of new commands run them else
 
-docker-current $1 $2 $3 $4 $5 $6 $7 $8 $9
+docker-current "$@"
 
 
 
