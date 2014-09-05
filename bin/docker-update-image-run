@@ -1,0 +1,2 @@
+#!/bin/bash
+## Will update ENV DOCKER_RUN in Existing image or pull that image
