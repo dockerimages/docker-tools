@@ -16,13 +16,16 @@ Collection of usefull docker-tools install able via docker run
 
     $ docker-run-image dockerimages/docker-tools
 
-Commands List:
-=============
+## Commands List:
 
 /usr/bin/docker-fs                          Shows Filesystm Informations
+
 /usr/bin/docker-ip                          Shows Container IP
+
 /usr/bin/docker-rmi                         docker -rm with predefined sets
+
 /usr/bin/docker-run-in                      Copys file from host intocontainer and executes it (Scripts)
+
 /usr/bin/docker-cp	                        docker cp into a container even running
 /usr/bin/docker-image-run		            docker run imagename with flags in image ENV DOCKER_RUN
 /usr/bin/docker-image-build                 docker build with flags in image ENV DOCKER_BUILD
