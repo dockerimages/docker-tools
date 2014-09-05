@@ -1,4 +1,0 @@
-#!/bin/bash
-# Uses docker-inspect-env-value command to get value of DOCKER_BUILD env var and execute that
-# Usage: docker-rebuild imagename
-docker-run-env $1 DOCKER_BUILD

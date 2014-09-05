@@ -1,0 +1,9 @@
+#!/bin/bash
+# Uses docker-inspect-env-value command to get value of DOCKER_BUILD env var and execute that
+# Usage: docker-rebuild imagename
+# CHeck if img exists if not take image name and look in dockerimages git repo if is in take it for building else fail
+# Usage: docker-rebuild your/image
+docker-run-env $1 DOCKER_BUILD
+#if negativ tryfind it on github in dockerimages/
+
+#Fail
