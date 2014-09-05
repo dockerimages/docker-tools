@@ -5,4 +5,6 @@ sleep 5
 # need to loop cp till succesfully probally
 sudo cp /usr/bin/docker-1.*-dev /usr/bin/docker-current
 sudo service docker start
+sleep 2
+# need to check till docker ps works :D
 sudo docker start $RESTART
