@@ -1,0 +1,6 @@
+#!/bin/bash
+RESTART=$(docker ps | echo $(awk '{print $1}'))
+sudo service docker stop
+sudo cp /usr/bin/docker-1.*-dev /usr/bin/docker-current
+sudo service docker start
+sudo docker start $RESTART
