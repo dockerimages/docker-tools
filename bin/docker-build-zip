@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# if $3 = rm remove the $TMPDIR
+TMPDIR=$(mktemp -u -d)
+cd $TMPDIR
+# if http wget else cp
+wget $2
+docker build -t $1 .
+rm -rf $TMPDIR
