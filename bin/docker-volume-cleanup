@@ -1,0 +1,102 @@
+#!/bin/sh
+
+# CV = current volumes (in the filesystem)
+# DV = docker volumes (currently defined)
+# OV = orphaned volumes (those not in docker)
+
+vfs_dir="/var/lib/docker/vfs/dir"
+do_cleanup=0
+
+while [ $# -gt 0 ]
+do
+    case "$1" in
+        (-f|--force)
+            do_cleanup=1
+            ;;
+    esac
+    shift
+done
+
+cleanup() {
+    rm "$ov_file" "$cv_file" "$dv_file" > /dev/null 2>/dev/null
+}
+
+trap "cleanup" HUP TERM
+
+# Grab the current volumes
+cv_file=`mktemp`
+
+# Ensure we can read the vfs directory
+ls -ld $vfs_dir >/dev/null 2>&1
+
+if [ ! $? -eq 0 ]
+then
+    cat <<EOF
+
+ >> Error: unable to read $vfs_dir
+ >> Ensure this script is run with appropriate permissions
+
+EOF
+    exit 1
+fi
+
+# Ensure we can run docker
+docker ps >/dev/null 2>&1
+if [ ! $? -eq 0 ]
+then
+    cat <<EOF
+
+  >> Error: Docker returned an error
+  >> Ensure this script is run with the appropriate permissions
+
+EOF
+    exit 1
+fi
+
+# Create the list of volumes and sort it
+find $vfs_dir -mindepth 1 -maxdepth 1 -type d \
+    | sort -u > $cv_file
+
+# Grab the volumes defined in docker
+dv_file=`mktemp`
+docker ps -aq \
+    | xargs docker inspect --format '{{ range $index, $element := .Volumes }} {{ $element }} {{end}}' \
+    | xargs -n1 echo \
+    | sort -u > $dv_file
+
+# Compare them, grab the ones that are "current" but not in those defined
+ov_file=`mktemp`
+diff -u $cv_file $dv_file \
+    | tail -n+3 \
+    | grep ^- \
+    | cut -c2- > $ov_file
+
+cat - $dv_file <<EOF
+
+ >> Volumes (in use) <<
+EOF
+
+if [ `wc -l $ov_file | awk '{ print $1 }'` -gt 0 ]
+then
+        cat - $ov_file <<EOF
+
+ >> Orphaned Volumes <<
+EOF
+
+        if [ $do_cleanup -eq 1 ]
+        then
+                xargs --no-run-if-empty -a $ov_file -i{} find {} -delete
+        else
+                cat <<EOF
+
+ >> No volumes removed (use -f to remove volumes)
+EOF
+        fi
+else
+    cat <<EOF
+
+ >> No orphaned volumes found
+EOF
+fi
+
+cleanup
