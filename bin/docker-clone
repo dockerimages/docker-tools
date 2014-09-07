@@ -1,0 +1,456 @@
+#!/usr/bin/env python
+
+import os
+import json
+import argparse
+import subprocess
+
+dockerargs = argparse.ArgumentParser(add_help=False)
+
+# Docker options (as of 1.2.0)
+dockerargs.add_argument('-a', '--attach', choices=["stdin", "stdout", "stderr"], action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('-c','--cpu-shares', help=argparse.SUPPRESS)
+dockerargs.add_argument('--cap-add', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('--cap-drop', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('--cidfile', help=argparse.SUPPRESS)
+dockerargs.add_argument('--cpuset', help=argparse.SUPPRESS)
+dockerargs.add_argument('--device', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('--dns', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('--dns-search', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('-e', '--env', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('--entrypoint', help=argparse.SUPPRESS)
+dockerargs.add_argument('--env-file', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('--expose', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('-h', '--hostname', help=argparse.SUPPRESS)
+dockerargs.add_argument('-i', '--interactive', nargs="?", choices=["true", "false"], const="true", help=argparse.SUPPRESS)
+dockerargs.add_argument('--link', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('-m', '--memory', help=argparse.SUPPRESS)
+dockerargs.add_argument('--name', help=argparse.SUPPRESS)
+dockerargs.add_argument('--net', help=argparse.SUPPRESS)
+dockerargs.add_argument('-P', '--publish-all', nargs="?", choices=["true", "false"], const="true", help=argparse.SUPPRESS)
+dockerargs.add_argument('-p', '--publish', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('--privileged', nargs="?", choices=["true", "false"], default="false", const="true", help=argparse.SUPPRESS)
+dockerargs.add_argument('--restart', help=argparse.SUPPRESS)
+dockerargs.add_argument('--rm', nargs="?", choices=["true", "false"], const="true", help=argparse.SUPPRESS)
+dockerargs.add_argument('--sig-proxy', nargs="?", choices=["true", "false"], const="true")
+dockerargs.add_argument('--tty', nargs="?", choices=["true", "false"], const="true", help=argparse.SUPPRESS)
+dockerargs.add_argument('--volume', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('--volumes-from', action='append', help=argparse.SUPPRESS)
+dockerargs.add_argument('--workdir', help=argparse.SUPPRESS)
+
+argparser = argparse.ArgumentParser(
+    description='Copy a docker container with its settings and volumes',
+    parents=[dockerargs],
+    add_help=False
+)
+
+# Non-docker options
+argparser.add_argument('--help', action="help", help="show this help message and exit")
+argparser.add_argument('--image', help="use an alternate image")
+argparser.add_argument('--detach', '-d', action="store_true", default=False, help=argparse.SUPPRESS)
+argparser.add_argument('--skip-attach', action="append", metavar="[]")
+argparser.add_argument('--skip-cap-add', action="append", metavar="[]")
+argparser.add_argument('--skip-cap-drop', action="append", metavar="[]")
+argparser.add_argument('--skip-device', action="append", metavar="[]")
+argparser.add_argument('--skip-dns', action="append", metavar="[]")
+argparser.add_argument('--skip-dns-search', action="append", metavar="[]")
+argparser.add_argument('--skip-entrypoint', nargs="?", choices=["true", "false"], default="false", const="true", help=argparse.SUPPRESS, metavar="\"\"", )
+argparser.add_argument('--skip-env', action="append", metavar="[]")
+argparser.add_argument('--skip-expose', action="append", metavar="[]")
+argparser.add_argument('--skip-interactive', nargs="?", choices=["true", "false"], default="false", const="true", help=argparse.SUPPRESS, metavar="\"\"", )
+argparser.add_argument('--skip-link', action="append", metavar="[]")
+argparser.add_argument('--skip-publish', action="append", metavar="[]")
+argparser.add_argument('--skip-volume', action="append", metavar="[]")
+argparser.add_argument("container", metavar="CONTAINER")
+argparser.add_argument("cmd", nargs="*", metavar="CMD")
+
+# Gather up the arguments, process them
+args = argparser.parse_args()
+
+def docker_inspect(container):
+    inspector = subprocess.Popen(["docker", "inspect", container], stdout=subprocess.PIPE)
+    inspection = inspector.communicate()[0]
+
+    if inspector.returncode != 0:
+        print "error - docker inspect did not return properly"
+        exit(2)
+
+    configs = json.loads(inspection)
+
+    if len(configs) != 1:
+        # This probably shouldn't happen
+        print "error - docker inspect did not return 1 container"
+        exit(2)
+        
+    if len(configs) != 1:
+        # This probably shouldn't happen
+        print "error - docker inspect did not return 1 container"
+        exit(2)
+        
+    return configs;
+    
+container = docker_inspect(args.container)[0];
+image = docker_inspect(container["Image"])[0];
+
+run_args=["docker", "run"]
+
+# Figure out what to --attach
+if not args.detach:
+    attachments = {
+        'stdout': container["Config"]["AttachStdout"],
+        'stderr': container["Config"]["AttachStderr"],
+        'stdin':  container["Config"]["AttachStdin"],
+    }
+
+    if args.skip_attach:
+        for attach in args.skip_attach:
+            attachments[attach] = False
+
+    if args.attach:
+        for attach in args.attach:
+            attachments[attach] = True
+
+    for attach in attachments:
+        if attachments[attach]:
+            run_args.extend(["--attach", str(attach).lower()])
+    
+# Figure out capabilities to add/remove
+capabilities = {}    
+if container["HostConfig"]["CapAdd"]:
+    for capability in container["HostConfig"]["CapAdd"]:
+        capabilities[capability] ="add" 
+        
+if container["HostConfig"]["CapDrop"]:
+    for capability in container["HostConfig"]["CapDrop"]:
+        capabilities[capability] ="drop"
+        
+if args.skip_cap_add:
+    for capability in args.skip_cap_add:
+        if capabilities[capability] == "add":
+            del capabilities[capability]
+
+if args.skip_cap_drop:
+    for capability in args.skip_cap_drop:
+        if capabilities[capability] == "drop":
+            del capabilities[capability]
+        
+if args.cap_add:
+    for capability in args.cap_add:
+        capabilities[capability] ="add" 
+
+if args.cap_drop:
+    for capability in args.cap_drop:
+        capabilities[capability] ="drop" 
+        
+for capability in capabilities:
+    action = "--cap-" + capabilities[capability]
+    run_args.extend([action, capability])
+
+# CPU Shares    
+if args.cpu_shares:
+    run_args.extend(['--cpu-shares', args.cpu_shares])
+elif container['Config']['CpuShares']:
+    run_args.extend(['--cpu-shares', container['Config']['CpuShares']]) 
+
+if args.cidfile:
+    run_args.extend(['--cidfile', args.cpu_shares])
+elif container["HostConfig"]["ContainerIDFile"]:
+    run_args.extend(['--cidfile', args.cpu_shares])
+
+if args.detach:
+    run_args.extend(['--detach'])
+
+# Devices
+devices = {}
+if container["HostConfig"]["Devices"]:
+    for device in container["HostConfig"]["Devices"]:
+        devices[device["PathInContainer"]] = ":".join([
+            device["PathOnHost"],
+            device["PathInContainer"],
+            device["CgroupPermissions"]
+        ])
+        
+if args.skip_device:
+    for device in args.skip_device:
+        if device in devices:
+            del devices[device]
+        
+if args.device:
+    for device in args.device:
+        path_in_container = str.split(":", 2)[0];
+        devices[path_in_container] = device
+
+for device in devices:
+    run_args.extend(["--device", devices[device]]);
+
+# DNS
+dns = {}
+if container["HostConfig"]["Dns"]:
+    for server in container["HostConfig"]["Dns"]:
+        dns[server] = server
+        
+if args.skip_dns:
+    for server in args.skip_dns:
+        if server in dns:
+            del dns[server]
+            
+if args.dns:
+    for server in args.dns:
+        dns[server] = server
+        
+for server in dns:
+    run_args.extend(["--dns", server])
+    
+# DNS Search
+dns_domains = {}
+if container["HostConfig"]["DnsSearch"]:
+    for domain in container["HostConfig"]["DnsSearch"]: 
+        dns_domains[domain] = domain;
+        
+if args.skip_dns_search:
+    for domain in args.skip_dns_search:
+        if domain in dns_domains:
+            del dns_domains[domain]
+        
+if args.dns_search:    
+    for server in args.dns_search:
+        dns_domains[domain] = domain;
+        
+for server in dns_domains:
+    run_args.extend(["--dns-search", server]);
+    
+# Entrypoint
+if (
+  args.skip_entrypoint == False
+    and
+  container["Config"]["Entrypoint"]
+    and 
+  image["Config"]["Entrypoint"]
+    and
+  container["Config"]["Entrypoint"] != image["Config"]["Entrypoint"]
+):
+    if type(container["Config"]["Entrypoint"]).__name__ == "str":
+       run_args.extend(["--entrypoint", container["Config"]["Entrypoint"]])
+       
+    else:
+       run_args.extend(["--entrypoint"])
+       run_args.extend(container["Config"]["Entrypoint"])
+
+# Envs
+enviroment = {}
+if container["Config"]["Env"]:
+    for val in container["Config"]["Env"]:
+        key = val.split("=", 2)[0]
+        enviroment[key] = val;
+
+if args.skip_env:
+    for key in args.skip_env:
+        if key in enviroment:
+            del enviroment[key]
+            
+if args.env:
+    for val in args.env:
+        key = val.split("=", 2)[0]
+        enviroment[key] = val;
+    
+image_environment = {}
+if image["Config"]["Env"]:
+    for val in container["Config"]["Env"]:
+        key = val.split("=", 2)[0]
+        image_environment[key] = val;
+
+for key in enviroment:
+    add_env = True;
+    if key in image_environment and enviroment[key] == image_environment[key]:
+        add_env = False
+        
+    if add_env:
+        run_args.extend(["--env", enviroment[key]])
+    
+if args.env_file:
+    for file in args.env_file:
+        run_args.extend(['--env-file', file]);
+        
+# Expose
+expose = {}
+if container["Config"]["ExposedPorts"]:
+    for port in container["Config"]["ExposedPorts"]:
+        expose[port] = port
+
+if args.skip_expose:
+    for port in args.skip_expose:
+        if port in expose:
+            del expose[port]
+
+if args.expose:
+    for port in args.expose:
+        expose[port] = port
+        
+for port in expose:
+    run_args.extend(["--expose", port]);
+
+if args.hostname:
+    run_args.extend(["--hostname", args.hostname])
+
+if args.interactive:
+    if args.interactive == "true":
+        run_args.extend(["--interactive"])
+
+elif container["Config"]["OpenStdin"]:
+    run_args.extend(["--interactive"])
+
+# Links
+links = {}
+if container["HostConfig"]["Links"]:
+    for link in container["HostConfig"]["Links"]:
+        linked_container, reference = link.split(":", 2)
+        alias = reference.split("/", 3)[2]
+        links[alias] = ":".join([linked_container, alias])
+        
+if args.skip_link:
+    for link in args.skip_link:
+        if link in links:
+            del links[link]
+            
+if args.link:
+    for link in args.link:
+        linked_container, reference = link.split(":", 2)
+        alias = reference.split("/", 3)[2]
+        links[alias] = ":".join([linked_container, alias])
+        
+for link in links:
+    run_args.extend(['--link', links[link]]);
+    
+# lxc-config -- currently unimplemented
+# memory     -- currently unimplemented
+
+if args.name:
+    run_args.extend(['--name', args.name]);
+    
+if args.net:
+    run_args.extend(['--net', args.net]);
+elif container["HostConfig"]["NetworkMode"]:
+    run_args.extend(['--net', container["HostConfig"]["NetworkMode"]]) 
+    
+# publish-all and publish
+all_published=args.publish_all =="true" or container["HostConfig"]["PublishAllPorts"]
+if all_published:
+    run_args.extend(['--publish-all'])
+else:
+    bindings = {}
+    if container["HostConfig"]["PortBindings"]:
+        for binding in container["HostConfig"]["PortBindings"]:
+            for hostBinding in container["HostConfig"]["PortBindings"][binding]:
+                if hostBinding["HostIp"]:
+                    parts = [hostBinding["HostIp"], hostBinding["HostPort"], binding]
+                elif hostBinding["HostPort"]:
+                    parts = [hostBinding["HostPort"], binding]
+                else:
+                    parts = [binding]
+                bindings[binding] = ":".join(parts)
+            
+    for binding in bindings:
+        run_args.extend(["--publish", bindings[binding]])
+    
+
+# privileged
+if args.privileged:
+    if args.privileged == "true":
+        run_args.extend(["--privileged"])
+elif container["HostConfig"]["Privileged"]:
+    run_args.extend(["--privileged"])
+    
+# restart
+if args.restart:
+    run_args.extend(["--restart", args.restart])
+elif container["HostConfig"]["RestartPolicy"]["Name"]:
+    if (
+      container["HostConfig"]["RestartPolicy"]["Name"] == "on-failure"
+        and
+      container["HostConfig"]["RestartPolicy"]["MaximumRetryCount"] > 0
+    ):
+        parts = [container["HostConfig"]["RestartPolicy"]["Name"], str(container["HostConfig"]["RestartPolicy"]["MaximumRetryCount"])]
+    else:
+        parts = [container["HostConfig"]["RestartPolicy"]["Name"]]
+    run_args.extend(["--restart", ":".join(parts)])
+    
+# rm
+if args.rm:
+    run_args.extend(["--rm"])
+    
+# sig proxy
+if args.sig_proxy:
+    if args.sig_proxy == "false":
+        run_args.extend(["--sig-proxy=false"])
+        
+if args.tty:
+    if args.tty == "true":
+        run_args.extend(["--tty"])
+else:
+    if container["Config"]["Tty"]:
+        run_args.extend(["--tty"])
+        
+# volumes
+
+volumes_skipped = args.skip_volume;
+
+if args.skip_volume:
+    volumes = {}
+    if container["Volumes"]:
+        for container_path in container["Volumes"]:
+            hostPath = container["Volumes"][container_path]
+            if not container["VolumesRW"][container_path]:
+                parts = [container_path, hostPath, "ro"]
+            else:
+                parts = [container_path, hostPath]
+                
+            print ":".join(parts)
+            volumes[container_path] = ":".join(parts)
+    
+    volumes_skipped = False
+    for container_path in args.skip_volume:
+        if container_path in volumes:
+            print "Volume Skipped"
+            volumes_skipped = True
+            del volumes[container_path]
+
+    # We can just use volumes-from if there are no volumes actually skipped
+    if not volumes_skipped:
+        volumes = {}
+            
+    if args.volume:
+        for volume in args.volume:
+            volume_parts = volume.split(":", 3)
+            if len(volume_parts) > 1:
+                container_path = volume_parts[1]
+            elif len(volume_parts) == 1:
+                container_path = volume
+            volumes[container_path] = volume
+        
+    for volume in volumes:
+        run_args.extend(["--volume", volumes[volume]])
+        
+if container["Volumes"] and not volumes_skipped:
+    run_args.extend(["--volumes-from", container["Id"]]);
+
+# Volumes from
+if args.volumes_from:
+    for container in args.volumes_from:
+        run_args.extend(['--volumes-from', container])
+
+if args.workdir:
+    run_args.extend(['--work-dir', args.workdir])
+
+# Add the image        
+if args.image:
+    run_args.extend([args.image])
+else:
+    run_args.extend([container["Image"]])
+
+if args.cmd:
+    run_args.extend(args.cmd)
+elif container["Config"]["Cmd"]:
+    run_args.extend(container["Config"]["Cmd"])
+
+print subprocess.list2cmdline(run_args)
+os.execvp("docker", run_args)
