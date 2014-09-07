@@ -1,0 +1,124 @@
+#!/usr/bin/env ruby
+# Docker Event Listener / DDNS
+# Author: Kelly Becker <kbecker@kellybecker.me>
+# Website: http://kellybecker.me
+# Original Code: https://gist.github.com/KellyLSB/4315a0323ed0fe1d79b6
+# License: MIT
+
+# Set up a proper logger
+require 'logger'
+log_file = ARGV.first || '-'
+log = Logger.new(log_file == '-' ? $stdout : log_file)
+
+# Create a PID file for this service
+File.open('/var/run/docker_ddns.pid', 'w+') { |f| f.write($$) }
+
+# Capture the terminate signal
+trap("INT") do
+  log.info "Caught INT Signal... Exiting."
+  File.unlink('/var/run/docker_ddns.pid')
+  sleep 1
+  exit
+end
+
+# Welcome message
+log.info "Starting Docker Dynamic DNS - Event Handler"
+log.info "Maintainer: Kelly Becker <kbecker@kellybeckr.me>"
+log.info "Website: http://kellybecker.me"
+
+# Default Configuration
+ENV['DDNS_KEY']   ||= "/etc/bind/ddns.key"
+ENV['NET_NS']     ||= "10.1.0.1"
+ENV['NET_DOMAIN'] ||= "kellybecker.me"
+ENV['DOCKER_PID'] ||= "/var/run/docker.pid"
+
+# Ensure docker is running
+time_waited = Time.now.to_i
+until File.exist?(ENV['DOCKER_PID'])
+  if (Time.now.to_i - time_waited) > 600
+    log.fatal "Docker daemon still not started after 10 minutes... Please Contact Your SysAdmin!"
+    exit 1
+  end
+
+  log.warn "Docker daemon is not running yet..."
+  sleep 5
+end
+
+log.info "Docker Daemon UP! - Listening for Events..."
+
+# Find CGroup Mount
+File.open('/proc/mounts', 'r').each do |line|
+  dev, mnt, fstype, options, dump, fsck = line.split
+  next if "#{fstype}" != "cgroup"
+  next if "#{options}".include?('devices')
+  ENV['CGROUPMNT'] = mnt
+end.close
+
+# Exit if missing CGroup Mount
+unless ENV['CGROUPMNT']
+  log.fatal "Could not locate cgroup mount point."
+  exit 1
+end
+
+# Listen To Docker.io Events
+events = IO.popen('docker events')
+
+# Keep Listening for incoming data
+while line = events.gets
+
+  # Container Configuration
+  ENV['CONTAINER_EVENT']    = line.split.last
+  ENV['CONTAINER_CID_LONG'] = line.gsub(/^.*([0-9a-f]{64}).*$/i, '\1')
+  ENV['CONTAINER_CID']      = ENV['CONTAINER_CID_LONG'][0...12]
+
+  # Event Fired info
+  log.info "Event Fired (#{ENV['CONTAINER_CID']}): #{ENV['CONTAINER_EVENT']}."
+
+  case ENV['CONTAINER_EVENT']
+  when 'start'
+
+    # Get Container Details for DNS
+    ENV['CONTAINER_IP_ADDR']  = %x{docker inspect $CONTAINER_CID_LONG | grep '"IPAddress"'}.strip.gsub(/[^0-9\.]/i, '')
+    ENV['CONTAINER_HOSTNAME'] = %x{docker inspect $CONTAINER_CID_LONG| grep '"Hostname"' | awk '{print $NF}'}.strip.gsub(/^"(.*)",/i, '\1')
+
+    puts ENV['CONTAINER_HOSTNAME']
+    puts ENV['CONTAINER_IP_ADDR']
+
+    # Get Process ID of the LXC Container
+    ENV['NSPID'] = %x{head -n 1 $(find "$CGROUPMNT" -name $CONTAINER_CID_LONG | head -n 1)/tasks}.strip
+
+    # Ensure we have the PID
+    unless ENV['NSPID']
+      log.error "Could not find a process indentifier for container #{ENV['CONTAINER_CID']}. Cannot update DNS."
+      next
+    end
+
+    # Create the Net Namespaces
+    %x{mkdir -p /var/run/netns}
+    %x{rm -f /var/run/netns/$NSPID}
+    %x{ln -s /proc/$NSPID/ns/net /var/run/netns/$NSPID}
+
+    # Build the command to update the dns server
+    update_command = <<-UPDATE
+    ip netns exec $NSPID nsupdate -k $DDNS_KEY <<-EOF
+    server $NET_NS
+    zone $NET_DOMAIN.
+    update delete $CONTAINER_HOSTNAME.$NET_DOMAIN
+    update add $CONTAINER_HOSTNAME.$NET_DOMAIN 60 A $CONTAINER_IP_ADDR
+    send
+    EOF
+    UPDATE
+
+    # Run the nameserver update in the Net Namespace of the LXC Container
+    system(update_command.gsub(/^[ ]{4}/, ''))
+
+    # Message an success
+    if $?.success?
+      log.info "Updated Docker DNS (#{ENV['CONTAINER_CID']}): #{ENV['CONTAINER_HOSTNAME']}.#{ENV['NET_DOMAIN']} 60 A #{ENV['CONTAINER_IP_ADDR']}."
+    else
+      log.error "We could not update the Docker DNS records for #{ENV['CONTAINER_CID']}. Please check your nsupdate keys."
+    end
+  end
+end
+
+exit
