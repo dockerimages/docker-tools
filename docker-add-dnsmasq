@@ -1,0 +1,13 @@
+#!/bin/bash
+### Creates a file in /etc/dnsmasq.d for a docker container this script takes one arg the id
+# TODO:
+# Check if container exists!
+#
+#
+THIS_CID=${1}
+THIS_IP=$(docker inspect $THIS_CID | grep IPAddress | cut -f4 -d'"')
+THIS_HOSTNAME=$(docker inspect $THIS_CID | grep '"Hostname"' | cut -f4 -d '"')
+THIS_DOMAIN=$(docker inspect $THIS_CID | grep Domainname | cut -f4 -d '"')
+THIS_FQDN="${THIS_HOSTNAME}.${THIS_DOMAIN}"
+echo "address=/${THIS_FQDN}/$THIS_IP" > /etc/dnsmasq.d/0host_$THIS_CID
+echo "# \"THIS_DOCKER\": \"$THIS_CID \"" >> /etc/dnsmasq.d/0host_$THIS_CID
