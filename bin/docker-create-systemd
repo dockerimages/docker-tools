@@ -1,0 +1,21 @@
+#!/bin/bash
+cat <<EOF > /lib/systemd/system/${1}.service
+[Unit]
+Description=DOCKER-CONTAINER: ${1}
+Requires=docker.service
+After=docker.service
+
+[Service]
+User=root
+Restart=on-failure
+RestartSec=10
+ExecStartPre=-/usr/bin/docker kill ${1}
+ExecStartPre=-/usr/bin/docker rm ${1}
+ExecStart=/usr/bin/docker run --name=${1} -t \
+  ${2}
+ExecStartPost=/usr/bin/docker-create-dnsmasq ${1}
+ExecStartPost=/usr/bin/docker-create-apache-host ${1}
+ExecStop=/usr/bin/docker stop ${1}
+
+[Install]
+WantedBy=multi-user.target
