@@ -20,3 +20,5 @@ ExecStop=/usr/bin/docker stop ${1}
 [Install]
 WantedBy=multi-user.target
 EOF
+
+sudo systemctl enable ${1}
