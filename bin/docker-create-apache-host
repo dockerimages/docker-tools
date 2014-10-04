@@ -12,3 +12,5 @@ sudo echo "ProxyPreserveHost On
  ProxyPassReverse / http://${IP}:80/
  </VirtualHost>" >> /etc/apache2/sites-available/${1}.conf
 echo "Writed /etc/apache2/sites-available/${1}.conf"
+a2ensite ${1}
+sudo systemctl reload apache2
