@@ -1,4 +1,0 @@
-#!/bin/bash
-# Echos the IP of a container :D
-#echo $1
-docker inspect -f "{{ .NetworkSettings.IPAddress }}" $1

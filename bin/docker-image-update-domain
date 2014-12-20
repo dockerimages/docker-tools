@@ -1,6 +1,0 @@
-#!/bin/bash
-docker build -t $1 -<<DOCKERFILE
-FROM $1
-ENV VIRTUAL_DOMAIN $2
-ENV VIRTUAL_PORT $3
-DOCKERFILE

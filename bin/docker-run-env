@@ -1,3 +1,0 @@
-# Uses docker-inspect-env-value command to get value of DOCKER_RUN env var and execute that
-# Usage: docker-run-image dockerimages/imagename
-docker-inspect-env-value $1 $2 | exec $(awk '{print}')

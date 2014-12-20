@@ -1,2 +1,0 @@
-docker inspect --format ' {{ range $element := .Config.Env }}{{ $element }}{{ "\n" }}{{ end }}' $1 | grep $2 | sed 's/^[^=]*=//' <<< "$(awk '{print}')"
-# #echo "Usage: docker-inspect-env-value containerid VARNAME"

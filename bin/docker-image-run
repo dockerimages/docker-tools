@@ -1,5 +1,0 @@
-#!/bin/bash
-#############
-# Uses docker-run-env command with DOCKER_RUN var and execute that
-# Usage: docker-image-run dockerimages/imagename
-docker-run-env $1 DOCKER_RUN
