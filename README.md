@@ -1,20 +1,7 @@
 docker-tools v1.3 Info
 ============
-Collection of usefull docker-tools install able via docker run
+Collection of usefull docker-tools install able via docker run this is the binary only branch
 
-
-## Install
-
-    $ docker run -v /home/frank/oha:/target dockerimages/docker-tools
-
-    # Results in: 
-    ##############
-    # $ ls /home/frank/oha
-    # docker-cp  docker-enter  docker-fs  docker-ip  docker-rm  docker-rmi  docker-run-in  docker-volumen
-    
-## Update
-
-    $ docker-run-image dockerimages/docker-tools
 
 ## Commands List:
 
