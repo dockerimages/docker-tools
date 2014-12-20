@@ -5,7 +5,7 @@ Collection of usefull docker-tools install able via docker run
 
 ## Install
 
-    $ docker run -v /home/frank/oha:/target dockerimages/docker-tools
+    $ docker run --rm -v /usr/bin:/target dockerimages/docker-tools
 
     # Results in: 
     ##############
@@ -14,7 +14,7 @@ Collection of usefull docker-tools install able via docker run
     
 ## Update
 
-    $ docker-run-image dockerimages/docker-tools
+    $ docker run --rm -v /usr/bin:/target dockerimages/docker-tools
 
 ## Commands List:
 
