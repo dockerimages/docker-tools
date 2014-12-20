@@ -8,6 +8,7 @@ if mountpoint -q /target; then
 	echo "Installing docker-tools to /target"
 	ls -ao bin/*
 	cp -r bin/* /target/
+	git reset --hard origin/master
 else
 	echo "/target is not a mountpoint."
 	echo "You can either:"
