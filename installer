@@ -1,9 +1,9 @@
 #!/bin/sh
 if mountpoint -q /target; then
-	echo "Updating docker-tools2"
+	echo "Updating Scripts from docker-tools:only-bin branch"
 	cd /docker-tools
 	git fetch origin
- 	git reset --hard origin/master
+ 	git reset --hard origin/only-bin
  	chmod +x /docker-tools/bin/*
 	echo "Installing docker-tools to /target"
 	ls -ao bin/*
