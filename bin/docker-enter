@@ -7,6 +7,15 @@ else
     NSENTER=nsenter
 fi
 
+if [ -e "$NSENTER" ]
+then
+  echo "$NSENTER exists."
+else
+  echo "$NSENTER executeable not found Installing it"
+  docker run --rm -v /usr/local/bin:/target jpetazzo/nsenter
+fi
+
+
 if [ -z "$1" ]; then
     echo "Usage: docker-enter CONTAINER [COMMAND [ARG]...]"
     echo ""
