@@ -23,6 +23,45 @@ Collection of usefull docker-tools install able via docker run this is the binar
         /usr/bin/docker-inspect-env-value	        Inspects the ENV Value of a container and echos it
         /usr/bin/docker-rm	                        docker rm with predifned sets
         /usr/bin/docker-volumen                     docker volume commandscoming soon
+        
+        # New Commands and Functions (TODO)
+        docker-build-zip
+        docker-clone
+        docker-cp
+        docker-create-apache-host
+        docker-create-dnsmasq-conf
+        docker-create-systemd
+        docker-ddns
+        docker-enter
+        docker-flatten
+        docker-fs
+        docker-image-run
+        docker-image-update-domain
+        docker-inspect-env-value
+        docker-ip
+        docker-ps
+        docker-rebuild
+        docker-redeploy
+        docker-rename
+        docker-rm
+        docker-rmi
+        docker-run-env
+        docker-run-http
+        docker-run-in
+        docker-update-current
+        docker-update-image-run
+        docker-volume-cleanup
+
+# Planed
+create systemd unit from container or image
+- in image mode it will always recreate the container on startup
+- in container mode it will always restart the container and or do other stuff if you like
+
+create dnsmasq files from container 
+
+
+Teach the People the concepts of configuration files stored in the container.
+
 
 # docker-volumen
 Lists Volumes and the Storage driver they belong to also shows if container for that volume exists.
