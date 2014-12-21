@@ -2,6 +2,12 @@ docker-tools v1.4 Info
 ============
 Collection of usefull docker-tools install able via docker run
 
+# !! Importent for old users !!
+if u used docker-tools befor plz repull the img via
+
+    docker pull dockerimages/docker-tools
+
+thx
 
 ## Install
 
