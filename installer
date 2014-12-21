@@ -1,5 +1,8 @@
 #!/bin/sh
 if mountpoint -q /target; then
+	cd /tmp
+	wget http://github.com/dockerimages/docker-tools/archive/only-bin.zip
+        unzip *.zip
 	cd /tmp/docker-tools-only-bin
 	chmod +x /tmp/docker-tools-only-bin/bin/*
 	echo "Installing docker-tools to /target"
