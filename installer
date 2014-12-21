@@ -1,17 +1,11 @@
 #!/bin/sh
 if mountpoint -q /target; then
-	echo "Updating Scripts from docker-tools:only-bin branch"
-	cd /docker-tools
-	git fetch origin
- 	echo "Ok Switching to only-bin"
- 	git reset --hard origin/only-bin
- 	sleep 5
- 	chmod +x /docker-tools/bin/*
+	cd /tmp/docker-tools-only-bin
+	chmod +x /tmp/docker-tools-only-bin/bin/*
 	echo "Installing docker-tools to /target"
 	ls -ao bin/*
 	cp -r bin/* /target/
 	echo "Ok Switching back to master"
-	git reset --hard origin/master
 else
 	echo "/target is not a mountpoint."
 	echo "You can either:"
