@@ -9,37 +9,34 @@ Collection of usefull docker-tools install able via docker run this is the binar
         /usr/bin/docker-ip                          Shows Container IP
         /usr/bin/docker-rmi                         docker -rm with predefined sets
         /usr/bin/docker-run-in                      Copys file from host intocontainer and executes it (Scripts)
-        /usr/bin/docker-cp	                        docker cp into a container even running
-        /usr/bin/docker-image-run		            docker run imagename with flags in image ENV DOCKER_RUN
+        /usr/bin/docker-image-run		    docker run imagename with flags in image ENV DOCKER_RUN
         /usr/bin/docker-image-build                 docker build with flags in image ENV DOCKER_BUILD
         /usr/bin/docker-run-env                     executes a command stored in a docker ENV
-        /usr/bin/docker-update-current              Updates /usr/bin/docker-current binary with Current Dev                                                                  and Restarts Docker Daemon
-        /usr/bin/docker-image-update-domain	        Rebuilds the Image with new VIRTUAL_DOMAIN ENV
+        /usr/bin/docker-update-current              Updates /usr/bin/docker-current binary with Current Dev                                                               and Restarts Docker Daemon
+        /usr/bin/docker-image-update-domain	    Rebuilds the Image with new VIRTUAL_DOMAIN ENV
         /usr/bin/docker-redeploy                    takes down running container and starts it new
         /usr/bin/docker-run-http                    example command that runs a apache container with a dir
         /usr/bin/docker-update-image-run            Rebuilds the Image with New DOCKER_RUN ENV
-        /usr/bin/docker-enter	                    modifyed docker enter that 
-                                                    replaces it self if docker-enter isn't installed
-        /usr/bin/docker-inspect-env-value	        Inspects the ENV Value of a container and echos it
-        /usr/bin/docker-rm	                        docker rm with predifned sets
+        /usr/bin/docker-inspect-env-value	    Inspects the ENV Value of a container and echos it
+        /usr/bin/docker-rm	                    docker rm with predifned sets
         /usr/bin/docker-volumen                     docker volume commandscoming soon
         
         # New Commands and Functions (TODO)
         docker-build-zip
         docker-clone
-        docker-cp
+        docker-cp                               [ docker cp into a container even running ]
         docker-create-apache-host
         docker-create-dnsmasq-conf
         docker-create-systemd
         docker-ddns
-        docker-enter
-        docker-flatten
+        docker-enter                            [ docker-enter command that downloads/installs nsenter if not there ]
+        docker-flatten                          [ run container from img and reimports him ]
         docker-fs
         docker-image-run
         docker-image-update-domain
         docker-inspect-env-value
         docker-ip
-        docker-ps
+        docker-ps                               [ Shows container id /name ip ]
         docker-rebuild
         docker-redeploy
         docker-rename
@@ -51,7 +48,12 @@ Collection of usefull docker-tools install able via docker run this is the binar
         docker-update-current
         docker-update-image-run
         docker-volume-cleanup
-
+        
+        Example output of "docker-ps"        
+        0e025d989b414eab4708deaa52b201b3a117f9b2ace4939ff94bc44d2c658ff9 /lonely_wilson 172.17.0.30
+        fc9800b8a12bc67b10833b71f9a2964e833c1d0575f835a5a16fd06ad40ff261 /grave_bell 172.17.0.5
+        
+        
 # Planed
 create systemd unit from container or image
 - in image mode it will always recreate the container on startup
