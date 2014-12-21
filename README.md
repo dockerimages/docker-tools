@@ -48,7 +48,7 @@ Collection of usefull docker-tools install able via docker run
 [Plz look for that at the only-bin branch](https://github.com/dockerimages/docker-tools/tree/only-bin)
 
 
- Copyright 2014 Frank Lemanschik @ DIREKTSPEED LTD
+ Copyright 2015 Frank Lemanschik @ DIREKTSPEED LTD
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
