@@ -12,7 +12,8 @@ then
   echo "$NSENTER exists."
 else
   echo "$NSENTER executeable not found Installing it"
-  docker run --rm -v /usr/local/bin:/target jpetazzo/nsenter
+  # docker run --rm -v /usr/bin:/target jpetazzo/nsenter
+  docker run --rm jpetazzo/nsenter cat /nsenter > /usr/bin/nsenter && chmod +x /usr/bin/nsenter
 fi
 
 
