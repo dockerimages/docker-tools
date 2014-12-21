@@ -1,6 +1,6 @@
-docker-tools v1.3 Info
+docker-tools-only-bin
 ============
-Collection of usefull docker-tools install able via docker run this is the binary only branch
+Collection of usefull docker-tools install able via docker run this is the binary only branch the installer & updater is at [github.com/dockerimages/docker-tools](https://github.com/dockerimages/docker-tools/)
 
 
 ## Commands List:
