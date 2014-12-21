@@ -14,8 +14,11 @@ MAINTAINER Frank Lemanschik <frank@dspeed.eu>
 ENV DOCKER_TOOLS_VERSION 1.4
 ENV DOCKER_RUN docker-current run -v /usr/bin:/target dockerimages/docker-tools
 ENV DOCKER_BUILD docker build -t dockerimages/docker-tools git://github.com/dockerimages/docker-tools
-RUN apt-get update -y && apt-get -y install git
-RUN git clone --depth 1 git://github.com/dockerimages/docker-tools
+RUN apt-get update -y && apt-get -y install unzip wget
+WORKDIR /tmp
+RUN wget http://github.com/dockerimages/docker-tools/archive/only-bin.zip
+RUN unzip *.zip
+# RUN git clone --depth 1 -b master --single-branch git://github.com/dockerimages/docker-tools
 ADD ./installer /installer
 RUN chmod +x /installer
 CMD ["/installer"]
