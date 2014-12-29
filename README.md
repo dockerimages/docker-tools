@@ -29,7 +29,9 @@ Collection of usefull docker-tools install able via docker run this is the binar
         docker-create-dnsmasq-conf
         docker-create-systemd
         docker-ddns
-        docker-enter                            [ docker-enter command that downloads/installs nsenter if not there ]
+        docker-enter                            [ New Improved docker-enter command using docker exec allows partials ]
+        docker-center                           [ alternate docker-enter command written in c allows -u user -d /path]
+        docker-nsenter                          [ docker-enter command that downloads/installs nsenter if not there ]
         docker-flatten                          [ run container from img and reimports him ]
         docker-fs
         docker-image-run
