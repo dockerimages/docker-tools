@@ -9,7 +9,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-FROM ubuntu:14.04
+FROM ubuntu:15.04
 MAINTAINER Frank Lemanschik <frank@dspeed.eu>
 ENV DOCKER_TOOLS_VERSION 1.4
 ENV DOCKER_RUN docker-current run -v /usr/bin:/target dockerimages/docker-tools
