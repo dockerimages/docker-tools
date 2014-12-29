@@ -1,0 +1,3 @@
+echo "DOCKER-ENTER executeable not found Installing it"
+docker run --rm -v /usr/bin:/target dockerimages/docker-enter
+# docker run --rm dockerimages/docker-enter cat /docker-enter > /usr/bin/docker-enter && chmod +x /usr/bin/docker-enter
