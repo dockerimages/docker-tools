@@ -28,6 +28,7 @@ else
  CONTAINERFS=(             # Compound assignment
     [aufs]='/var/lib/docker/aufs/mnt/$CONTAINERID/'
     [devicemapper]='/var/lib/docker/devicemapper/mnt/$CONTAINERID/rootfs/'
+    [btrfs]='/var/lib/docker/btrfs/subvolumes/$CONTAINERID/'
   )
  
   if [[ ${CONTAINERFS[$STORAGE_DRIVER]} ]]; then
@@ -36,3 +37,4 @@ else
     echo "Your Storage Driver: $STORAGE_DRIVER - isn't supported"
     exit 1
   fi
+fi
