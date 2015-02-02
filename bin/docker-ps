@@ -1,3 +1,3 @@
 ### This is a Docker ps command that shows ip container name and container id seperated by space
-#alias dps="docker ps -q | xargs docker inspect --format '{{ .Id }} - {{ .Name }} - {{ .NetworkSettings.IPAddress }}'"
-docker ps -q | xargs docker inspect --format '{{ .Id }} {{ .Name }} {{ .NetworkSettings.IPAddress }}'
+#alias dps="docker ps -q | xargs docker inspect --format '{{ .Id }} {{ .Name }} {{ .NetworkSettings.IPAddress }}' | tr -d "/" | echo -e "$(awk '{print $1 "\t" $2 "\t" $3}')" | column -t"
+docker ps -q | xargs docker inspect --format '{{ .Id }} {{ .Name }} {{ .NetworkSettings.IPAddress }}' | tr -d "/" | echo -e "$(awk '{print $1 "\t" $2 "\t" $3}')" | column -t
