@@ -6,7 +6,6 @@ Collection of usefull docker-tools install able via docker run this is the binar
 ## Commands List:
 
         /usr/bin/docker-fs                          Shows Filesystm Informations
-        /usr/bin/docker-ip                          Shows Container IP
         /usr/bin/docker-rmi                         docker -rm with predefined sets
         /usr/bin/docker-run-in                      Copys file from host intocontainer and executes it (Scripts)
         /usr/bin/docker-image-run		    docker run imagename with flags in image ENV DOCKER_RUN
@@ -19,7 +18,6 @@ Collection of usefull docker-tools install able via docker run this is the binar
         /usr/bin/docker-update-image-run            Rebuilds the Image with New DOCKER_RUN ENV
         /usr/bin/docker-inspect-env-value	    Inspects the ENV Value of a container and echos it
         /usr/bin/docker-rm	                    docker rm with predifned sets
-        /usr/bin/docker-volumen                     docker volume commandscoming soon
         
         # New Commands and Functions (TODO)
         docker-build-zip
@@ -37,7 +35,7 @@ Collection of usefull docker-tools install able via docker run this is the binar
         docker-image-run
         docker-image-update-domain
         docker-inspect-env-value
-        docker-ip
+        docker-ip                               [ Shows container ip ]
         docker-ps                               [ Shows container id /name ip ]
         docker-rebuild
         docker-redeploy
@@ -49,12 +47,7 @@ Collection of usefull docker-tools install able via docker run this is the binar
         docker-run-in
         docker-update-current
         docker-update-image-run
-        
         docker-volume-cleanup                   [ Shows Volumes current in use and Orpharned left over once can do clean up of orpharned ]
-        
-        Example output of "docker-ps"        
-        0e025d989b414eab4708deaa52b201b3a117f9b2ace4939ff94bc44d2c658ff9 /lonely_wilson 172.17.0.30
-        fc9800b8a12bc67b10833b71f9a2964e833c1d0575f835a5a16fd06ad40ff261 /grave_bell 172.17.0.5
         
         
 # Planed
@@ -69,13 +62,23 @@ Teach the People the concepts of configuration files stored in the container.
 
 
 ## docker-ip
+docker-ip [container name or id]
+
+Output:
+172.17.0.2
 
 ## docker-ps 
+docker-ps
+~~~
+b166306371e35b6a8215adf01aa0b6e012dea59328c3aed57cc6d5c5836ba818  adt-2-solr                172.17.0.2
+dc29e8d5510fcc66bdf4666ec226c5f3aade74c072df3373567f2719b5da2c79  adt-wp-db                 172.17.0.3
+~~~
 
 ## docker-volumen-cleanup
 Lists Volumes and the Storage driver they belong to also shows if container for that volume exists.
 if you supply the -f switch it will auto clean orpharned volumes in orpharned volumes is every volume where no container could be found for also called left over volumes
 
+docker-volumen-cleanup
 ~~~
  >> Volumes (in use) <<
 /
@@ -102,6 +105,7 @@ if you supply the -f switch it will auto clean orpharned volumes in orpharned vo
 /var/lib/docker/vfs/dir/0e851ad03b6f82b4aacd75ad00b34ca97a436a9a926757e4af150d23cc2814c0
 /var/lib/docker/vfs/dir/0ed66974fb24c447e5346a23d17aab8bc9dd3ed075ce31212a20fb8ed7068933
 
+use docker-volume-cleanup -f to delet all orphaned volumes
 ~~~
 
 
