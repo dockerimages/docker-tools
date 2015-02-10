@@ -1,0 +1,17 @@
+#!/bin/bash
+### Installs *.service files from a folder and activates them
+if [ ! -z "$1" ]; then
+wildcards=( '*' '.' '?' '|' ']' '[' )
+for wildcard in "${wildcards[@]}";
+do
+  if [[ $1 == *"${wildcard}"* ]];
+  then
+    echo "plz dont use relativ path with me"; exit 1;
+    echo 'yes';
+  fi;
+ done
+ln -s ${1}/*.service  /lib/systemd/system
+ln -s ${1}/*.service  /etc/systemd/system/multi-user.target.wants
+else
+ echo "Supply /path/to/*.service files or give me current $PWD"
+fi
