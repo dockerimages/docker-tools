@@ -3,11 +3,42 @@
 shopt -s nullglob
 # shopt -s dotglob # To include hidden files
 files=(${1}/*.service)
-if [ ! -z "$1" ]; then
-if [ ${#files[@]} -gt 0 ]; then cd $1; echo "Installing $(echo ls *.service) from $PWD"; ln -s ${PWD}/*.service  /lib/systemd/system;systemctl daemon-reload ; systemctl enable $(echo ls *.service); systemctl daemon-reload
-else echo "Sorry no *.service files in $1"; exit 1;fi;
-else
-files=(${PWD}/*.service)
- if [ ${#files[@]} -gt 0 ]; then echo "Installing $(echo ls *.service) from $PWD"; ln -s ${PWD}/*.service  /lib/systemd/system; ; systemctl daemon-reload; systemctl enable $(echo ls *.service); systemctl daemon-reload; exit 0; fi;
+if [ ! -z "$1" ]; 
+ then
+  # Check if we find service files in this dir
+  if [ ${#files[@]} -gt 0 ]; 
+   then 
+    cd $1; 
+    echo "Installing $(echo ls *.service) from $PWD"; 
+    # Removing old if exist
+    ls *.service | xargs -i -n1 rm /lib/systemd/system/{}
+    ls *.service | xargs -i -n1 find /etc/systemd -name "{}" -print0 | xargs -0 rm
+    # Installing services into systemd repo
+    ln -s ${PWD}/*.service  /lib/systemd/system;
+    systemctl daemon-reload;
+    # Activating
+    ls *.service | xargs -n1 systemctl enable
+    systemctl daemon-reload;
+   else 
+    echo "Sorry no *.service files in $1"; 
+    exit 1;
+  fi;
+ else
+  # Check if we find service files in current dir
+  files=(${PWD}/*.service)
+  if [ ${#files[@]} -gt 0 ]; 
+   then 
+    echo "Installing $(echo ls *.service) from $PWD";
+    # Removing old if exist
+    ls *.service | xargs -i -n1 rm /lib/systemd/system/{}
+    ls *.service | xargs -i -n1 find /etc/systemd -name "{}" -print0 | xargs -0 rm
+    # Installing services into systemd repo
+    ln -s ${PWD}/*.service  /lib/systemd/system;
+    systemctl daemon-reload;
+    # Activating
+    ls *.service | xargs -n1 systemctl enable
+    systemctl daemon-reload;
+    exit 0; 
+   fi;
  echo "Failed: no systemd services found \n usage systemctl-inst /path/to/*.service files or or move into the dir i tested current $PWD "
-fi
+fi;
