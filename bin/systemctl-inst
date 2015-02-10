@@ -21,8 +21,10 @@ fi;
    then 
     echo "Installing $(echo $(ls *.service)) from $PWD to /lib/systemd/system";
     # Removing old if exist
-    ls *.service | xargs -i -n1 rm -f /lib/systemd/system/{}
-    ls *.service | xargs -i -n1 find /etc/systemd -name "{}" -print0 | xargs -0 rm -f
+    if [ ! -z "$2" ]; then
+     ls *.service | xargs -i -n1 rm -f /lib/systemd/system/{}
+     ls *.service | xargs -i -n1 find /etc/systemd -name "{}" -print0 | xargs -0 rm -f
+    fi;
     # Installing services into systemd repo
     rsync -ua --progress ${PWD}/*.service  /lib/systemd/system;
     systemctl daemon-reload;
