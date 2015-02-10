@@ -4,10 +4,10 @@ shopt -s nullglob
 # shopt -s dotglob # To include hidden files
 files=(${1}/*.service)
 if [ ! -z "$1" ]; then
-if [ ${#files[@]} -gt 0 ]; then cd $1; echo "Creating Symlinks from $PWD"; ln -s ${PWD}/*.service  /lib/systemd/system; ln -s ${PWD}/*.service  /etc/systemd/system/multi-user.target.wants; systemctl daemon-reload
+if [ ${#files[@]} -gt 0 ]; then cd $1; echo "Installing $(echo ls *.service) from $PWD"; ln -s ${PWD}/*.service  /lib/systemd/system;systemctl daemon-reload ; systemctl enable $(echo ls *.service); systemctl daemon-reload
 else echo "Sorry no *.service files in $1"; exit 1;fi;
 else
 files=(${PWD}/*.service)
- if [ ${#files[@]} -gt 0 ]; then echo "Creating Symlinks from $PWD"; ln -s ${PWD}/*.service  /lib/systemd/system; ln -s ${PWD}/*.service  /etc/systemd/system/multi-user.target.wants; systemctl daemon-reload; exit 0; fi;
- echo "Supply /path/to/*.service files or or move into the dir i tested current $PWD "
+ if [ ${#files[@]} -gt 0 ]; then echo "Installing $(echo ls *.service) from $PWD"; ln -s ${PWD}/*.service  /lib/systemd/system; ; systemctl daemon-reload; systemctl enable $(echo ls *.service); systemctl daemon-reload; exit 0; fi;
+ echo "Failed: no systemd services found \n usage systemctl-inst /path/to/*.service files or or move into the dir i tested current $PWD "
 fi
