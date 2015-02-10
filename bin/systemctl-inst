@@ -26,7 +26,7 @@ fi;
      ls *.service | xargs -i -n1 find /etc/systemd -name "{}" -print0 | xargs -0 rm -f
     fi;
     # Installing services into systemd repo
-    rsync -ua --progress ${PWD}/*.service  /lib/systemd/system;
+    rsync -Lua ${PWD}/*.service  /lib/systemd/system;
     systemctl daemon-reload;
     # Activating
     ls *.service | xargs -n1 systemctl enable
