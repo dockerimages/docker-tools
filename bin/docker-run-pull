@@ -1,0 +1,7 @@
+#!/bin/bash
+## Re Pulls Img befor run
+
+## TODO: Implament a pull flag for the docker run command for repull a img
+
+#docker pull 
+#docker run "$@"
