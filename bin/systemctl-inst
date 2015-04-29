@@ -33,3 +33,20 @@ fi;
     systemctl daemon-reload;
     exit 0; 
   fi;
+  #files=(${PWD}/bin/*)
+  #if [ ${#files[@]} -gt 0 ]; 
+  # then 
+  #  echo "Installing $(echo $(ls bin/*)) from $PWD to /usr/bin";
+    # Removing old if exist
+  #  if [ ! -z "$2" ]; then
+  #   ls bin/* | xargs -i -n1 rm -f /usr/bin/{}
+  #   ls bin/* | xargs -i -n1 find /usr/bin -name "{}" -print0 | xargs -0 rm -f
+  #  fi;
+    # Installing services into systemd repo
+  #   rsync -Luavh --progress ${PWD}/bin/*  /usr/bin;
+    # Activating
+  #  echo "installed bins:"
+  #  ls bin/*
+  #  exit 0; 
+  #fi;
+ 
