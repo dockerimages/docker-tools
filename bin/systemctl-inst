@@ -25,14 +25,18 @@ fi;
      ls *.service | xargs -i -n1 rm -f /lib/systemd/system/{}
      ls *.service | xargs -i -n1 find /etc/systemd -name "{}" -print0 | xargs -0 rm -f
     fi;
-    # Installing services into systemd repo
+    # Installing services into systemd repo/usr/lib/systemd/system-preset/
      rsync -Luavh --progress ${PWD}/*.service  /lib/systemd/system;
+     rsync -Luavh --progress ${PWD}/*.presets  /usr/lib/systemd/system-preset/;
+     
     systemctl daemon-reload;
     # Activating
     ls *.service | xargs -n1 systemctl enable
+    ls *.service | xargs -n1 systemctl start
     systemctl daemon-reload;
     exit 0; 
   fi;
+  
   #files=(${PWD}/bin/*)
   #if [ ${#files[@]} -gt 0 ]; 
   # then 
