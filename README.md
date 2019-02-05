@@ -4,7 +4,7 @@ Collection of usefull docker-tools install able via docker run this is the binar
 
 
 ## Commands List:
-
+        /usr/bin/docker-image-trace.sh              Shows how a image got build.
         /usr/bin/docker-fs                          Shows Filesystm Informations
         /usr/bin/docker-rmi                         docker -rm with predefined sets
         /usr/bin/docker-run-in                      Copys file from host intocontainer and executes it (Scripts)
@@ -109,7 +109,7 @@ use docker-volume-cleanup -f to delet all orphaned volumes
 ~~~
 
 
- Copyright 2014 Frank Lemanschik Direkt SPEED 
+ Copyright 2019 Frank Lemanschik <frank@dspeed.eu> 
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
