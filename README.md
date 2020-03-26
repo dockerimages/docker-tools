@@ -2,14 +2,15 @@ docker-tools v1.4 Info
 ============
 Collection of usefull docker-tools install able via docker run
 
-# !! Importent for old users !!
-if u used docker-tools befor plz repull the img via
-
-    docker pull dockerimages/docker-tools
-
-thx
-
-## Install
+## Install via binary
+Zip Download.
+```
+wget https://github.com/dockerimages/docker-tools/archive/only-bin.zip
+unzip only-bin.zip
+ls docker-tools-only-bin/bin
+```
+you can put them in your path or copy them to /usr/local/bin or /usr/bin
+## Install via Docker
 
     $ docker run --rm -v /usr/bin:/target dockerimages/docker-tools
 
@@ -54,7 +55,16 @@ thx
 [Plz look for that at the only-bin branch](https://github.com/dockerimages/docker-tools/tree/only-bin)
 
 
- Copyright 2015 Frank Lemanschik @ DIREKTSPEED LTD
+# !! Importent for old users befor 2015!!
+if u used docker-tools befor plz repull the img via
+
+    docker pull dockerimages/docker-tools
+
+thx
+
+
+
+ Copyright 2015-2020 Frank Lemanschik @ DIREKTSPEED LTD
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
